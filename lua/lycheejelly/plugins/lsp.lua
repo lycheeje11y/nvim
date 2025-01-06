@@ -27,7 +27,7 @@ return {
 					"html",
 					"cssls",
 					"emmet_ls",
-					"pyright",
+					"basedpyright",
 					"arduino_language_server",
 					"clangd",
 				},
@@ -58,9 +58,7 @@ return {
 			local mason_lspconfig = require("mason-lspconfig")
 
 			local cmp_nvim_lsp = require("cmp_nvim_lsp")
-
 			local keymap = vim.keymap
-
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("UserLspConfig", {}),
 				callback = function(ev)
@@ -116,6 +114,90 @@ return {
 								completion = {
 									classSnipper = "Replace",
 								},
+								hint = {
+									enable = true,
+								},
+							},
+						},
+					})
+				end,
+				["clangd"] = function()
+					require("lspconfig").clangd.setup({
+						settings = {
+							clangd = {
+								InlayHints = {
+									Designators = true,
+									Enabled = true,
+									ParameterNames = true,
+									DeducedTypes = true,
+								},
+								fallbackFlags = { "-std=c++20" },
+							},
+						},
+					})
+				end,
+				["rust_analyzer"] = function()
+					require("lspconfig").rust_analyzer.setup({
+						settings = {
+							["rust-analyzer"] = {
+								inlayHints = {
+									bindingModeHints = {
+										enable = false,
+									},
+									chainingHints = {
+										enable = true,
+									},
+									closingBraceHints = {
+										enable = true,
+										minLines = 25,
+									},
+									closureReturnTypeHints = {
+										enable = "never",
+									},
+									lifetimeElisionHints = {
+										enable = "never",
+										useParameterNames = false,
+									},
+									maxLength = 25,
+									parameterHints = {
+										enable = true,
+									},
+									reborrowHints = {
+										enable = "never",
+									},
+									renderColons = true,
+									typeHints = {
+										enable = true,
+										hideClosureInitialization = false,
+										hideNamedConstructor = false,
+									},
+								},
+							},
+						},
+					})
+				end,
+				["zls"] = function()
+					require("lspconfig").zls.setup({
+						settings = {
+							zls = {
+								enable_inlay_hints = true,
+								inlay_hints_show_builtin = true,
+								inlay_hints_exclude_single_argument = true,
+								inlay_hints_hide_redundant_param_names = false,
+								inlay_hints_hide_redundant_param_names_last_token = false,
+							},
+						},
+					})
+				end,
+				["basedpyright"] = function()
+					require("lspconfig").basedpyright.setup({
+						settings = {
+							basedpyright = {
+								analysis = {
+									autoSearchPaths = true,
+									diagnosticMode = "openFilesOnly",
+									useLibraryCodeForTypes = true,
+								},
 							},
 						},
 					})
@@ -140,7 +222,7 @@ return {
 		},
 		config = function()
 			local cmp = require("cmp")
-			local luansip = require("luasnip")
+			local luasnip = require("luasnip")
 			local lspkind = require("lspkind")
 
 			require("luasnip.loaders.from_vscode").lazy_load()
@@ -163,6 +245,7 @@ return {
 					{ name = "nvim_lsp" },
 					{ name = "luasnip" },
 					{ name = "buffer" },
+					{ name = "copilot" },
 					{ name = "path" },
 				}),
 				foratting = {
@@ -170,6 +253,7 @@ return {
 						format = lspkind.cmp_format({
 							maxwidth = 50,
 							ellipsis_char = "...",
+							symbol_map = { Copilot = "" },
 						}),
 					},
 				},
@@ -187,6 +271,11 @@ return {
 			{ "<leader>xq", "<cmd>Trouble quickfix toggle<CR>", desc = "Open trouble quickfix list" },
 			{ "<leader>xl", "<cmd>Trouble loclist toggle<CR>", desc = "Open trouble location list" },
 			{ "<leader>xt", "<cmd>Trouble todo toggle<CR>", desc = "Open todos in trouble" },
+			{
+				"<leader>xx",
+				"<cmd>Trouble diagnostics toggle<cr>",
+				desc = "Diagnostics (Trouble)",
+			},
 		},
 	},
 	{
