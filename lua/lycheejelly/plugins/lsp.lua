@@ -67,11 +67,20 @@ return {
 					opts.desc = "Show LSP References"
 					keymap.set("n", "gR", "<cmd> Telescope lsp_references<CR>", opts)
 
-					opts.desc = "Go to defnition"
+					opts.desc = "Go to declaration"
 					keymap.set("n", "gd", "<cmd>Telescope lsp_definitions<CR>", opts)
+
+					opts.desc = "Go to declaration"
+					keymap.set("n", "gD", vim.lsp.buf.declaration, opts) -- go to declaration
 
 					opts.desc = "Code actions"
 					keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts)
+
+					opts.desc = "Smart rename"
+					keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts) -- smart rename
+
+					opts.desc = "Show documentation for what is under cursor"
+					keymap.set("n", "K", vim.lsp.buf.hover, opts) -- show documentation for what is under cursor
 				end,
 			})
 
